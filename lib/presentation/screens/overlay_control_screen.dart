@@ -5,6 +5,7 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/color_utils.dart';
 import '../providers/crosshair_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/settings_provider.dart';
@@ -80,7 +81,7 @@ class _OverlayControlScreenState extends ConsumerState<OverlayControlScreen> {
       pickersEnabled: const {ColorPickerType.wheel: true, ColorPickerType.primary: true},
       enableShadesSelection: true,
     );
-    await ref.read(activeCrosshairProvider.notifier).setColor(picked.value);
+    await ref.read(activeCrosshairProvider.notifier).setColor(picked.toArgbInt());
   }
 
   Future<void> _saveAsPreset() async {
@@ -194,7 +195,7 @@ class _OverlayControlScreenState extends ConsumerState<OverlayControlScreen> {
                       (c) => Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: GestureDetector(
-                          onTap: () => notifier.setColor(c.value),
+                          onTap: () => notifier.setColor(c.toArgbInt()),
                           child: Container(
                             width: 28,
                             height: 28,

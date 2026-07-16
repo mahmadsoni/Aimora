@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/color_utils.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/crosshair_preview.dart';
 import '../../data/models/crosshair_model.dart';
@@ -93,7 +94,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               backgroundColor: Colors.transparent,
                               config: CrosshairConfig.defaults().copyWith(
                                 type: page.type,
-                                colorValue: page.color.value,
+                                colorValue: page.color.toArgbInt(),
                                 size: 60,
                               ),
                             ),
