@@ -16,6 +16,14 @@ import '../presentation/widgets/crosshair_painter.dart';
 @pragma('vm:entry-point')
 void overlayMain() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Safety net: if anything ever throws while building the overlay's
+  // widget tree, show nothing instead of Flutter's default full-screen
+  // red error box. The overlay window sits on top of every other app,
+  // so an opaque error screen here would visually block the whole
+  // device — this keeps a failure invisible and harmless instead.
+  ErrorWidget.builder = (FlutterErrorDetails details) => const SizedBox.shrink();
+
   runApp(const _OverlayApp());
 }
 
@@ -55,12 +63,16 @@ class _OverlayAppState extends State<_OverlayApp> with SingleTickerProviderState
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(scaffoldBackgroundColor: Colors.transparent),
-      home: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: IgnorePointer(
+    // Deliberately minimal: Directionality + Material (not MaterialApp /
+    // Scaffold / AppBar) so this tiny overlay engine never needs
+    // MaterialLocalizations, Navigator, or any other app-level
+    // machinery that could fail to attach during the overlay window's
+    // own lifecycle.
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Material(
+        type: MaterialType.transparency,
+        child: IgnorePointer(
           child: Center(
             child: AnimatedBuilder(
               animation: _animController,

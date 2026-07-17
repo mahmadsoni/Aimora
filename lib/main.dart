@@ -14,6 +14,18 @@ export 'overlay/overlay_main.dart' show overlayMain;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Defense-in-depth: if a widget ever throws during build, show a small
+  // friendly fallback instead of Flutter's raw red error screen — keeps
+  // the rest of the app (bottom navigation, other tabs) usable.
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return const ColoredBox(
+      color: Color(0xFF11162A),
+      child: Center(
+        child: Icon(Icons.error_outline_rounded, color: Colors.white38, size: 32),
+      ),
+    );
+  };
+
   final StorageService storage = await StorageService.create();
 
   await EasyLocalization.ensureInitialized();

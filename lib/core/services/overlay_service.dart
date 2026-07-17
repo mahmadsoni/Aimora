@@ -28,7 +28,12 @@ class OverlayService {
       height: WindowSize.matchParent,
       width: WindowSize.matchParent,
       alignment: OverlayAlignment.center,
-      flag: OverlayFlag.defaultFlag,
+      // Critical: without this flag the overlay window is touchable by
+      // default and, being full-screen, silently swallows every tap
+      // meant for the game underneath — making the whole phone appear
+      // frozen. clickThrough sets the native Android FLAG_NOT_TOUCHABLE
+      // so the crosshair is purely visual and never intercepts input.
+      flag: OverlayFlag.clickThrough,
       visibility: NotificationVisibility.visibilityPublic,
       positionGravity: PositionGravity.none,
       overlayTitle: 'AIMORA',
