@@ -20,6 +20,7 @@ class OverlayControlScreen extends ConsumerStatefulWidget {
 
 class _OverlayControlScreenState extends ConsumerState<OverlayControlScreen> {
   bool _busy = false;
+  double _moveStep = 6;
 
   Future<void> _toggleOverlay() async {
     setState(() => _busy = true);
@@ -139,13 +140,13 @@ class _OverlayControlScreenState extends ConsumerState<OverlayControlScreen> {
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
           // Live preview card
-          Container(
-            height: 220,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: AppColors.brandGradient,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Container(
+              height: 220,
+              decoration: const BoxDecoration(gradient: AppColors.brandGradient),
+              child: Center(child: CrosshairPreview(config: config, size: 150, backgroundColor: Colors.transparent)),
             ),
-            child: Center(child: CrosshairPreview(config: config, size: 150, backgroundColor: Colors.transparent)),
           ),
           const SizedBox(height: 20),
 
@@ -173,6 +174,50 @@ class _OverlayControlScreenState extends ConsumerState<OverlayControlScreen> {
             ],
           ),
           const SizedBox(height: 28),
+
+          // Position (D-pad)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _SectionLabel('position'.tr()),
+              TextButton.icon(
+                onPressed: () => notifier.resetPosition(),
+                icon: const Icon(Icons.center_focus_strong_rounded, size: 18),
+                label: Text('reset_position'.tr()),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _DPad(
+                onMove: (dx, dy) => notifier.nudgePosition(dx * _moveStep, dy * _moveStep),
+              ),
+              const SizedBox(width: 24),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _SectionLabel('move_speed'.tr()),
+                        Text(_moveStep.toStringAsFixed(0), style: Theme.of(context).textTheme.labelMedium),
+                      ],
+                    ),
+                    Slider(
+                      value: _moveStep,
+                      min: 1,
+                      max: 30,
+                      onChanged: (v) => setState(() => _moveStep = v),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
 
           // Color
           _SectionLabel('color'.tr()),
@@ -289,6 +334,55 @@ class _SliderRow extends StatelessWidget {
         ),
         Slider(value: value, min: min, max: max, onChanged: onChanged),
       ],
+    );
+  }
+}
+
+/// Compact directional pad used to nudge the crosshair's on-screen
+/// position (up/down/left/right), so it can be lined up with a game's
+/// own off-center aim point. Each tap moves by the current "speed"
+/// step; holding a button repeats the move for fast, continuous nudging.
+class _DPad extends StatelessWidget {
+  const _DPad({required this.onMove});
+
+  final void Function(double dx, double dy) onMove;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 156,
+      height: 156,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _dpadButton(icon: Icons.keyboard_arrow_up_rounded, onTap: () => onMove(0, -1)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _dpadButton(icon: Icons.keyboard_arrow_left_rounded, onTap: () => onMove(-1, 0)),
+              const SizedBox(width: 48, height: 48),
+              _dpadButton(icon: Icons.keyboard_arrow_right_rounded, onTap: () => onMove(1, 0)),
+            ],
+          ),
+          _dpadButton(icon: Icons.keyboard_arrow_down_rounded, onTap: () => onMove(0, 1)),
+        ],
+      ),
+    );
+  }
+
+  Widget _dpadButton({required IconData icon, required VoidCallback onTap}) {
+    return Material(
+      color: AppColors.darkSurfaceVariant,
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: Icon(icon, color: AppColors.cyan),
+        ),
+      ),
     );
   }
 }

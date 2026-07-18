@@ -73,12 +73,12 @@ class _OverlayAppState extends State<_OverlayApp> with SingleTickerProviderState
       child: Material(
         type: MaterialType.transparency,
         child: IgnorePointer(
-          child: Center(
+          child: SizedBox.expand(
             child: AnimatedBuilder(
               animation: _animController,
               builder: (context, _) {
                 return CustomPaint(
-                  size: const Size(200, 200),
+                  size: Size.infinite,
                   painter: CrosshairPainter(config: _config, animationValue: _animController.value),
                 );
               },

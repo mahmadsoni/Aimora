@@ -15,6 +15,8 @@ class CrosshairConfig {
     required this.gap,
     required this.opacity,
     required this.outline,
+    this.offsetX = 0,
+    this.offsetY = 0,
   });
 
   final CrosshairType type;
@@ -24,6 +26,12 @@ class CrosshairConfig {
   final double gap;
   final double opacity;
   final bool outline;
+
+  /// Horizontal/vertical offset (in logical pixels) from dead-center,
+  /// so the crosshair can be nudged to line up with a game's own
+  /// off-center aim point. Positive x moves right, positive y moves down.
+  final double offsetX;
+  final double offsetY;
 
   Color get color => Color(colorValue);
 
@@ -35,6 +43,8 @@ class CrosshairConfig {
         gap: 8,
         opacity: 1.0,
         outline: true,
+        offsetX: 0,
+        offsetY: 0,
       );
 
   CrosshairConfig copyWith({
@@ -45,6 +55,8 @@ class CrosshairConfig {
     double? gap,
     double? opacity,
     bool? outline,
+    double? offsetX,
+    double? offsetY,
   }) {
     return CrosshairConfig(
       type: type ?? this.type,
@@ -54,6 +66,8 @@ class CrosshairConfig {
       gap: gap ?? this.gap,
       opacity: opacity ?? this.opacity,
       outline: outline ?? this.outline,
+      offsetX: offsetX ?? this.offsetX,
+      offsetY: offsetY ?? this.offsetY,
     );
   }
 
@@ -65,6 +79,8 @@ class CrosshairConfig {
         'gap': gap,
         'opacity': opacity,
         'outline': outline,
+        'offsetX': offsetX,
+        'offsetY': offsetY,
       };
 
   factory CrosshairConfig.fromJson(Map<String, dynamic> json) {
@@ -76,6 +92,8 @@ class CrosshairConfig {
       gap: (json['gap'] as num?)?.toDouble() ?? 8,
       opacity: (json['opacity'] as num?)?.toDouble() ?? 1.0,
       outline: json['outline'] as bool? ?? true,
+      offsetX: (json['offsetX'] as num?)?.toDouble() ?? 0,
+      offsetY: (json['offsetY'] as num?)?.toDouble() ?? 0,
     );
   }
 
@@ -89,9 +107,12 @@ class CrosshairConfig {
         other.thickness == thickness &&
         other.gap == gap &&
         other.opacity == opacity &&
-        other.outline == outline;
+        other.outline == outline &&
+        other.offsetX == offsetX &&
+        other.offsetY == offsetY;
   }
 
   @override
-  int get hashCode => Object.hash(type, colorValue, size, thickness, gap, opacity, outline);
+  int get hashCode =>
+      Object.hash(type, colorValue, size, thickness, gap, opacity, outline, offsetX, offsetY);
 }

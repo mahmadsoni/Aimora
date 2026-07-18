@@ -17,7 +17,10 @@ class CrosshairPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Offset center = Offset(size.width / 2, size.height / 2);
+    final Offset center = Offset(
+      size.width / 2 + config.offsetX,
+      size.height / 2 + config.offsetY,
+    );
     final Color color = config.color.withValues(alpha: config.opacity);
     final Paint stroke = Paint()
       ..color = color

@@ -28,6 +28,14 @@ class ActiveCrosshairNotifier extends StateNotifier<CrosshairConfig> {
   Future<void> setOpacity(double opacity) => update((c) => c.copyWith(opacity: opacity));
   Future<void> setOutline(bool outline) => update((c) => c.copyWith(outline: outline));
 
+  /// Nudges the crosshair's on-screen position by (dx, dy) logical
+  /// pixels — used by the directional pad on the Overlay Control screen
+  /// to line the crosshair up with a game's own off-center aim point.
+  Future<void> nudgePosition(double dx, double dy) =>
+      update((c) => c.copyWith(offsetX: c.offsetX + dx, offsetY: c.offsetY + dy));
+
+  Future<void> resetPosition() => update((c) => c.copyWith(offsetX: 0, offsetY: 0));
+
   Future<void> applyConfig(CrosshairConfig config) => update((_) => config);
 
   Future<void> resetToDefaults() => update((_) => CrosshairConfig.defaults());
